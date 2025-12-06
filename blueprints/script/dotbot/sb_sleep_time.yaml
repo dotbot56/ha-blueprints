@@ -1,0 +1,85 @@
+blueprint:
+  name: SB – Sleep Time Routine
+  description: |
+    Turns on bedroom lights, enables sleep mode, pauses media, and gradually powers down lights and media players.
+  domain: script
+  input:
+    lights_on_target:
+      name: Lights to turn on initially
+      selector:
+        target:
+          entity:
+            domain: light
+    sleep_mode_switch:
+      name: Sleep mode switch
+      selector:
+        entity:
+          domain: switch
+    media_pause_target:
+      name: Media players to pause
+      selector:
+        target:
+          entity:
+            domain: media_player
+    media_poweroff_target:
+      name: Media players to turn off
+      selector:
+        target:
+          entity:
+            domain: media_player
+    lights_powerdown_target:
+      name: Lights to power down before final delay
+      selector:
+        target:
+          entity:
+            domain: light
+    final_lights_off_target:
+      name: Final lights to turn off
+      selector:
+        target:
+          entity:
+            domain: light
+    initial_on_delay:
+      name: Delay after turning on initial lights (seconds)
+      default: 5
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+          mode: slider
+    pre_final_delay:
+      name: Delay before final lights off (seconds)
+      default: 30
+      selector:
+        number:
+          min: 0
+          max: 600
+          unit_of_measurement: seconds
+          mode: slider
+sequence:
+  - action: light.turn_on
+    target: !input lights_on_target
+    data: {}
+  - delay:
+      seconds: !input initial_on_delay
+  - action: switch.turn_on
+    target:
+      entity_id: !input sleep_mode_switch
+    data: {}
+  - action: media_player.media_pause
+    target: !input media_pause_target
+    data: {}
+  - action: media_player.turn_off
+    target: !input media_poweroff_target
+    data: {}
+  - action: light.turn_off
+    target: !input lights_powerdown_target
+    data: {}
+  - delay:
+      seconds: !input pre_final_delay
+  - action: light.turn_off
+    target: !input final_lights_off_target
+    data: {}
+mode: single
+icon: mdi:sleep

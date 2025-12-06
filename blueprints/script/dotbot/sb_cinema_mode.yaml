@@ -1,0 +1,73 @@
+blueprint:
+  name: SB – Cinema Mode
+  description: |
+    Activates cinema mode by powering on the media hub, managing automations, launching an app, and triggering lighting automation.
+  domain: script
+  input:
+    tv_remote_device:
+      name: TV/Media remote device
+      selector:
+        device: {}
+    tv_remote_entity:
+      name: TV/Media remote entity
+      selector:
+        entity:
+          domain: remote
+    automations_to_disable:
+      name: Automations to disable
+      selector:
+        target:
+          entity:
+            domain: automation
+    automation_to_enable:
+      name: Automation to enable
+      selector:
+        entity:
+          domain: automation
+    app_media_player:
+      name: Media player to start app on
+      selector:
+        entity:
+          domain: media_player
+    app_content_id:
+      name: App media content ID
+      selector:
+        text:
+          multiline: false
+    app_media_type:
+      name: Media content type
+      default: app
+      selector:
+        text:
+          multiline: false
+    lighting_automation:
+      name: Lighting automation to trigger
+      selector:
+        entity:
+          domain: automation
+sequence:
+  - type: turn_on
+    device_id: !input tv_remote_device
+    entity_id: !input tv_remote_entity
+    domain: remote
+  - action: automation.turn_off
+    target: !input automations_to_disable
+    data:
+      stop_actions: true
+  - action: automation.turn_on
+    target:
+      entity_id: !input automation_to_enable
+    data: {}
+  - action: media_player.play_media
+    target:
+      entity_id: !input app_media_player
+    data:
+      media_content_id: !input app_content_id
+      media_content_type: !input app_media_type
+  - action: automation.trigger
+    target:
+      entity_id: !input lighting_automation
+    data:
+      skip_condition: true
+mode: single
+icon: mdi:theater

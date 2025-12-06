@@ -1,0 +1,47 @@
+blueprint:
+  name: SB – Auto Backup Full
+  description: |
+    Creates a full backup with optional retention and sends a notification on success.
+  domain: script
+  input:
+    backup_service:
+      name: Backup service
+      default: auto_backup.backup_full
+      selector:
+        text:
+          multiline: false
+    compressed:
+      name: Compressed backup
+      default: true
+      selector:
+        boolean: {}
+    keep_days:
+      name: Days to keep backup
+      default: 21
+      selector:
+        number:
+          min: 0
+          max: 365
+          mode: slider
+    notify_target:
+      name: Notification target
+      selector:
+        entity:
+          domain: notify
+    success_message:
+      name: Success message
+      default: Backup erfolgreich
+      selector:
+        text:
+          multiline: false
+sequence:
+  - service: !input backup_service
+    data:
+      compressed: !input compressed
+      keep_days: !input keep_days
+  - service: notify.notify
+    target:
+      entity_id: !input notify_target
+    data:
+      message: !input success_message
+mode: single

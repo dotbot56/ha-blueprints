@@ -1,0 +1,56 @@
+blueprint:
+  name: SB – Guest Visiting
+  description: |
+    Prepares the home for visiting guests by turning on welcoming lights and adjusting presence automations.
+  domain: script
+  input:
+    welcome_lights:
+      name: Welcome lights
+      selector:
+        target:
+          entity:
+            domain: light
+    disable_automations:
+      name: Automations to disable
+      selector:
+        target:
+          entity:
+            domain: automation
+    enable_automation:
+      name: Automation to enable
+      selector:
+        entity:
+          domain: automation
+    brightness:
+      name: Brightness (%)
+      default: 88
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+    welcome_color:
+      name: Welcome RGB color
+      default:
+        - 0
+        - 0
+        - 255
+      selector:
+        color_rgb: {}
+sequence:
+  - action: light.turn_on
+    target: !input welcome_lights
+    data:
+      brightness_pct: !input brightness
+      rgb_color: !input welcome_color
+  - action: automation.turn_off
+    target: !input disable_automations
+    data:
+      stop_actions: true
+  - action: automation.turn_on
+    target:
+      entity_id: !input enable_automation
+    data: {}
+mode: single
+icon: mdi:account-group
