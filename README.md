@@ -1,10 +1,9 @@
-# 🏠 Home Assistant Blueprints – Dotbot  
-Professionelle, modulare und wiederverwendbare Automationsvorlagen  
-nach dem Schema **M1, M2, C1, B1, B2, L1**
+# 🏠 Home Assistant Blueprints – dotbot  
+Modulare, skalierbare und wiederverwendbare Blueprints für Home Assistant  
+→ Automationen & Scripts nach einem sauberen Klassifizierungssystem
 
-Dieses Repository enthält strukturierte, kategorisierte und erweiterbare  
-Blueprints für Home Assistant.  
-Alle Vorlagen basieren auf realen Automationen aus einer produktiven Installation.
+Dieses Repository enthält eine vollständige Sammlung strukturierter **Automation-Blueprints** und **Script-Blueprints**, basierend auf einer realen, produktiven Home-Assistant-Installation.  
+Alle Blueprints sind vollständig modularisiert und durch Inputs konfigurierbar.
 
 ---
 
@@ -22,174 +21,263 @@ ha-blueprints-dotbot/
 │   │       ├── b1_button_toggle_target.yaml
 │   │       ├── b2_button_call_script.yaml
 │   │       ├── l1_illuminance_automation_manager.yaml
-│   └── script/
-│       └── dotbot/
-│           └── .gitkeep
+│   ├── script/
+│   │   └── dotbot/
+│   │       ├── sb_sleep_time.yaml
+│   │       ├── sb_auto_backup_full.yaml
+│   │       ├── sb_cinema_mode.yaml
+│   │       ├── sb_controller_charging.yaml
+│   │       ├── sb_sexy_time.yaml
+│   │       ├── sb_guest_visiting.yaml
+│   │       ├── sb_guest_overnight.yaml
+│   │       ├── sb_cleaning_routine.yaml
+│   │       ├── sb_all_lights_off.yaml
 └── examples/
     └── .gitkeep
 ````
 
 ---
 
-# 🚀 Import in Home Assistant
+# 🚀 Importieren eines Blueprints in Home Assistant
 
-Du kannst jeden Blueprint direkt per **RAW-URL** importieren:
+**Pfad:**
+*Einstellungen → Automationen & Szenen → Blueprints → Importieren*
 
-**Home Assistant → Einstellungen → Automationen & Szenen → Blueprints → Importieren**
-
-Beispiel (ersetze `<username>` durch dein GitHub-Profil):
+**Beispiel-URL:**
+(ersetze `<username>` durch deinen GitHub-Namen)
 
 ```
 https://raw.githubusercontent.com/<username>/ha-blueprints-dotbot/main/blueprints/automation/dotbot/m1_motion_light_basic.yaml
 ```
 
----
-
-# 🔥 Blueprint Kategorien (M1, M2, C1, B1, B2, L1)
-
-Klare Struktur – leicht erweiterbar.
+Das gilt für *alle* Blueprints im Repo.
 
 ---
 
-## 🟦 **M1 – Motion → Light (Basic)**
+# 🔷 **Automation Blueprint Kategorien**
+
+## 🟦 M1 – Motion → Light (Basic)
 
 **Datei:** `m1_motion_light_basic.yaml`
+Bewegungsmelder schaltet Licht ein und verzögert wieder aus.
 
-Ein Motion/Presence-Sensor schaltet ein Licht an, und nach einer einstellbaren Zeit ohne Bewegung wieder aus.
-
-**Funktionen:**
-
-* Unterstützt `motion`, `occupancy`, `presence`
-* Ein/Aus-Logik
-* Auto-Off Delay (Standard 120s)
-* Target kann Entity, Device oder Area sein
+* Unterstützt motion / occupancy / presence
+* Konfigurierbare Ausschaltverzögerung
+* Ziel: Entity / Device / Area
 
 ---
 
-## 🟪 **M2 – Motion → Light (Sleep-Mode aware)**
+## 🟪 M2 – Motion → Light (Sleep Mode aware)
 
 **Datei:** `m2_motion_light_sleepmode.yaml`
-
-Erweiterung von M1 mit Sleep-Modus–abhängiger Lichtwahl.
-
-**Funktionen:**
+Schaltet je nach Sleep-Mode verschiedenes Licht.
 
 * Normales Licht vs. Sleep-Licht
-* Sleep-Mode Switch als zusätzliche Bedingung
-* Auto-Off für beide Lichtziele
-
-Perfekt für Badezimmer, Schlafzimmer, Gang etc.
+* Sleep-Mode wird automatisch berücksichtigt
 
 ---
 
-## 🟫 **C1 – Contact → Light Auto-Off**
+## 🟫 C1 – Contact → Light Auto-Off
 
 **Datei:** `c1_contact_light_autooff.yaml`
-
-Ein Tür-/Fenster-/Schrankkontakt schaltet das Licht beim Öffnen ein
-und beim Schliessen oder nach X Sekunden automatisch aus.
-
-**Funktionen:**
-
-* Sofortiges Ausschalten bei „contact = off“
-* Optionale Timeout-Abschaltung
+Kontakt-Sensor öffnet → Licht an
+Kontakt schliesst oder Timeout → Licht aus
 
 ---
 
-## 🟧 **B1 – Button → Toggle Target**
+## 🟧 B1 – Button → Toggle Target
 
 **Datei:** `b1_button_toggle_target.yaml`
+Buttons lösen `light.toggle`, `switch.toggle` etc. aus.
 
-Ein Zigbee/MQTT-Schalter löst ein frei definierbares Toggle aus.
-
-**Funktionen:**
-
-* Frei wählbarer Service (`light.toggle`, `switch.toggle`, …)
-* Volle Target-Auswahl (Entity / Device / Area)
-* Unterstützt alle Action-Subtypes (single, double, hold, …)
-
-Ersetzt dutzende kleine Einzelautomationen.
+* Unterstützt MQTT & Zigbee Buttons
+* Jeder `action_subtype` (single, double, hold, …)
 
 ---
 
-## 🟥 **B2 – Button → Script/Scene Trigger**
+## 🟥 B2 – Button → Script/Scene Trigger
 
 **Datei:** `b2_button_call_script.yaml`
-
-Ein Button startet ein Script oder eine Szene.
-
-**Typische Anwendung:**
+Buttons starten Scripts oder Szenen wie:
 
 * Sleep-Time
-* Sexy-Time
-* Cinema-Mode
-* Stimmungsszenen
+* Cinema Mode
+* Sexy Time
 
 ---
 
-## 🟩 **L1 – Illuminance Automation Manager**
+## 🟩 L1 – Illuminance Automation Manager
 
 **Datei:** `l1_illuminance_automation_manager.yaml`
-
-Skeleton-Blueprint zur Steuerung von Räumen oder Automationen
-basierend auf Helligkeitswerten.
-
-**Geplant:**
-
-* Tag / Dämmerung / Nacht Profile
-* Automationen aktivieren/deaktivieren
-* Lichtszenen abhängig vom Lux-Wert
+Skeleton für spätere komplexe Licht-/Lux-basierte Automationen.
 
 ---
 
-# 🧩 Architektur & Philosophie
+# 🟦 **Script Blueprint Kategorien (SB*)**
 
-Dieses Repo folgt einem klaren, wartbaren Schema:
-
-| Kategorie | Bedeutung                       | Beispiele                        |
-| --------- | ------------------------------- | -------------------------------- |
-| **M***    | Motion-/Presence-basierte Logik | Lichtsteuerung, Sleep-Mode       |
-| **C***    | Contact-Sensor Logik            | Schranklicht, Tür-Licht          |
-| **B***    | Button-/Remote-Steuerung        | Toggle, Szenen, Scripts          |
-| **L***    | Licht-/Lux-/Modus-Manager       | Tag/Nacht, Automationsverwaltung |
-
-Jede Kategorie ist:
-
-* modular
-* austauschbar
-* unabhängig versionierbar
-* kompatibel mit GitHub Blueprints Import
+Script-Blueprints ermöglichen, dass komplexe Abläufe
+→ **beliebig wiederverwendbar**
+→ **parameterisierbar**
+→ **versionskontrolliert**
+werden.
 
 ---
 
-# 🔧 Anforderungen & Hinweise
+## 🌙 SB1 – Sleep Time Routine
 
-* YAML-Includes sind **raw-kompatibel**
-* keine Tabs, nur **2 Leerzeichen**
-* Entity-Selectors folgen Home-Assistant-Standards
-* Jede Datei ist sofort importierbar
+**Datei:** `sb_sleep_time.yaml`
 
----
+Automatisierte Abend-/Schlafroutine:
 
-# 📝 Lizenz
-
-Optional MIT, Apache 2.0 oder dein eigener Hinweis.
+* Lichtdimmung
+* Sleep-Mode aktivieren
+* Medien pausieren
+* Wohnung in „Ruhe“-Zustand versetzen
 
 ---
 
-# 🙌 Kontakt & Support
+## 💾 SB2 – Auto Backup Full
 
-Verbesserungen, Fragen oder Funktionswünsche?
-→ Einfach ein GitHub Issue eröffnen!
+**Datei:** `sb_auto_backup_full.yaml`
+
+Führt ein vollständiges Backup aus inkl.:
+
+* Kompression
+* Aufbewahrungsdauer
+* Benachrichtigung
 
 ---
 
-# 🎉 Fertig!
+## 🎬 SB3 – Cinema Mode
 
-Wenn du möchtest, kann ich zusätzlich:  
-✅ eine automatisierte GitHub-*Release-Struktur* erzeugen  
-✅ ein *Update-Skript* für Blueprints generieren  
-✅ import-fertige *raw URLs* mit deinem GitHub-Namen einsetzen  
-✅ CI/CD für YAML-Linting hinzufügen  
+**Datei:** `sb_cinema_mode.yaml`
 
-Sag einfach, was du brauchst.
+TV einschalten →
+Automationen deaktivieren →
+Plex-App starten →
+Cinema-Lighting aktivieren
+
+---
+
+## 🎮 SB4 – Controller Charging
+
+**Datei:** `sb_controller_charging.yaml`
+
+Steckdose aktivieren →
+Timer →
+Automatisches Abschalten
+
+Perfekt für Controller, Akkus & Ladegeräte.
+
+---
+
+## 🔥 SB5 – Sexy Time
+
+**Datei:** `sb_sexy_time.yaml`
+
+Dynamische Szenenlogik:
+
+* Medien stoppen oder starten
+* Adaptive Lighting togglen
+* Lichtstimmungen setzen
+* Musik & Lautstärke anpassen
+
+---
+
+## 👤 SB6 – Guest Visiting
+
+**Datei:** `sb_guest_visiting.yaml`
+
+Aktiviert „Gastbesuch“-Profil:
+
+* ausgewählte Lichter an
+* bestimmte Automationen deaktivieren
+* Gast-Automation einschalten
+
+---
+
+## 🛏️ SB7 – Guest Overnight
+
+**Datei:** `sb_guest_overnight.yaml`
+
+Setzt das System über Nacht in „Gast-Schlafmodus“.
+
+---
+
+## 🤖 SB8 – Cleaning Routine (Roborock)
+
+**Datei:** `sb_cleaning_routine.yaml`
+
+Startet spezielle Reinigungsprogramme:
+
+* Küche
+* Gästezone
+* Eingangsbereich
+* Badezimmer
+
+Inklusive Mop-Einstellungen & Segment-Cleaning.
+
+---
+
+## 💡 SB9 – All Lights Off
+
+**Datei:** `sb_all_lights_off.yaml`
+
+Schaltet definierte Bereiche vollständig aus.
+
+---
+
+# 🧩 Architektur & Namensschema
+
+| Kategorie | Typ        | Bedeutung                               |
+| --------- | ---------- | --------------------------------------- |
+| **M***    | Automation | Motion/Presence-basierte Logik          |
+| **C***    | Automation | Contact-Sensor Logik                    |
+| **B***    | Automation | Button-/Remote-Steuerung                |
+| **L***    | Automation | Lux-/Modus-basierte Steuerung           |
+| **SB***   | Script     | komplexe Abläufe (Sequenzen & Routinen) |
+
+Namensschema gewährleistet:
+
+* Skalierbarkeit
+* Systematische Erweiterung
+* Einfache Wiedererkennung
+
+---
+
+# 🧪 Qualität & Standards
+
+Alle Blueprints:
+
+* folgen strengem 2-Leerzeichen-YAML-Standard
+* sind *raw-import-kompatibel*
+* nutzen Home Assistant Selector-Standards
+* funktionieren ohne weitere Anpassungen
+
+---
+
+# 📜 Lizenz
+
+MIT License
+
+---
+
+# 🙌 Feedback & Beiträge
+
+Verbesserungen oder Erweiterungen willkommen!
+→ Erstelle ein Issue oder öffne einen Pull Request.
+
+```
+
+---
+
+# 🎉 Bereit für GitHub!
+
+Wenn du willst, kann ich:
+
+✅ alle Script-Blueprint-Dateien sofort generieren  
+✅ ein automatisches JSON-Indexfile erzeugen  
+✅ eine Versionierung (semantic versioning) vorbereiten  
+✅ ein GitHub Actions YAML für YAML-Linting hinzufügen  
+
+Sag einfach: **„Bitte alle Script-Blueprints generieren“**.
