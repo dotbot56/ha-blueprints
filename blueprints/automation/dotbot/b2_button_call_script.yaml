@@ -1,0 +1,41 @@
+blueprint:
+  name: B2 – Button → Script starten
+  description: >
+    Verknüpft einen MQTT-/Zigbee-Button oder -Schalter mit einem Home-Assistant-Script
+    (z. B. Sleep-Time, Cinema-Mode, Szenen).
+  domain: automation
+  input:
+    button_device:
+      name: Button-/Schalter-Device
+      description: MQTT-/Zigbee-Gerät, das die Action-Events liefert.
+      selector:
+        device: {}
+
+    action_subtype:
+      name: Action Subtype
+      description: Subtype der Aktion, z. B. single, double, hold, 1_single, 2_single etc.
+      default: single
+      selector:
+        text: {}
+
+    script_entity:
+      name: Script
+      description: Script, das beim Button-Event gestartet wird.
+      selector:
+        entity:
+          domain: script
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: device
+    domain: mqtt
+    device_id: !input button_device
+    type: action
+    subtype: !input action_subtype
+
+action:
+  - service: script.turn_on
+    target:
+      entity_id: !input script_entity
