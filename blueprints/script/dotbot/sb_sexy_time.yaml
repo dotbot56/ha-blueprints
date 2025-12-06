@@ -1,0 +1,187 @@
+blueprint:
+  name: SB – Sexy Time
+  description: |
+    Sets a romantic scene by adjusting media playback, adaptive lighting, volumes, and colored lights based on whether media is already playing.
+  domain: script
+  input:
+    bedroom_media_device:
+      name: Bedroom media device
+      selector:
+        device: {}
+    bedroom_media_entity:
+      name: Bedroom media entity
+      selector:
+        entity:
+          domain: media_player
+    adaptive_lighting_lights:
+      name: Adaptive lighting lights
+      selector:
+        entity:
+          multiple: true
+          domain: light
+    manual_control_value:
+      name: Manual control value when paused
+      default: false
+      selector:
+        boolean: {}
+    manual_control_value_else:
+      name: Manual control value when preparing scene
+      default: true
+      selector:
+        boolean: {}
+    bedroom_area_target:
+      name: Bedroom area target for pausing
+      selector:
+        target:
+          area: {}
+    pause_overhead_lights:
+      name: Overhead lights to turn on when pausing
+      selector:
+        entity:
+          multiple: true
+          domain: light
+    ambient_light_target:
+      name: Ambient lights to color
+      selector:
+        target:
+          entity:
+            domain: light
+    ambient_transition:
+      name: Ambient light transition (seconds)
+      default: 15
+      selector:
+        number:
+          min: 0
+          max: 60
+          unit_of_measurement: seconds
+          mode: slider
+    ambient_rgb:
+      name: Ambient RGB color
+      default:
+        - 189
+        - 0
+        - 182
+      selector:
+        color_rgb: {}
+    ambient_brightness:
+      name: Ambient brightness (%)
+      default: 50
+      selector:
+        number:
+          min: 0
+          max: 100
+          unit_of_measurement: "%"
+          mode: slider
+    overhead_lights_off:
+      name: Overhead lights to turn off when scene starts
+      selector:
+        entity:
+          multiple: true
+          domain: light
+    music_player:
+      name: Music player
+      selector:
+        entity:
+          domain: media_player
+    playlist_url:
+      name: Playlist URL
+      default: https://open.spotify.com/playlist/0QJ2WqTNOUVuCXzVjfpf84?si=f0375a3065ea4d28
+      selector:
+        text:
+          multiline: false
+    initial_volume:
+      name: Initial volume level
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.01
+          mode: slider
+    final_volume:
+      name: Final volume level
+      default: 0.12
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.01
+          mode: slider
+    next_track_delay:
+      name: Delay before next track (seconds)
+      default: 7
+      selector:
+        number:
+          min: 0
+          max: 120
+          unit_of_measurement: seconds
+          mode: slider
+sequence:
+  - if:
+    - condition: device
+      device_id: !input bedroom_media_device
+      domain: media_player
+      entity_id: !input bedroom_media_entity
+      type: is_playing
+    then:
+    - service: media_player.media_pause
+      target: !input bedroom_area_target
+      data: {}
+    - service: light.turn_on
+      target:
+        entity_id: !input pause_overhead_lights
+      data: {}
+    - service: adaptive_lighting.set_manual_control
+      data:
+        manual_control: !input manual_control_value
+        lights: !input adaptive_lighting_lights
+    else:
+    - service: media_player.unjoin
+      target:
+        device_id: !input bedroom_media_device
+      data: {}
+    - service: adaptive_lighting.set_manual_control
+      data:
+        manual_control: !input manual_control_value_else
+        lights: !input adaptive_lighting_lights
+    - service: media_player.volume_set
+      target:
+        entity_id: !input music_player
+      data:
+        volume_level: !input initial_volume
+    - service: media_player.play_media
+      data:
+        media_content_id: !input playlist_url
+        media_content_type: playlist
+        enqueue: replace
+      target:
+        entity_id: !input music_player
+    - service: media_player.shuffle_set
+      target:
+        entity_id: !input music_player
+      data:
+        shuffle: true
+    - service: light.turn_on
+      target: !input ambient_light_target
+      data:
+        transition: !input ambient_transition
+        rgb_color: !input ambient_rgb
+        brightness_pct: !input ambient_brightness
+    - service: light.turn_off
+      target:
+        entity_id: !input overhead_lights_off
+      data:
+        transition: !input ambient_transition
+    - delay:
+        seconds: !input next_track_delay
+    - service: media_player.media_next_track
+      target:
+        entity_id: !input music_player
+      data: {}
+    - service: media_player.volume_set
+      target:
+        entity_id: !input music_player
+      data:
+        volume_level: !input final_volume
+mode: single
+icon: mdi:fire

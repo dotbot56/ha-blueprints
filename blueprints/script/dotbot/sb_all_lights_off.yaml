@@ -1,0 +1,17 @@
+blueprint:
+  name: SB – All Lights Off
+  description: |
+    Turns off lights in selected areas.
+  domain: script
+  input:
+    target_areas:
+      name: Target areas
+      selector:
+        target:
+          area: {}
+sequence:
+  - action: light.turn_off
+    target: !input target_areas
+    data: {}
+mode: single
+icon: mdi:lightbulb-group-outline

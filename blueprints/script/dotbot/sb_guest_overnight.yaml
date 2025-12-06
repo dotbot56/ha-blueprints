@@ -1,0 +1,28 @@
+blueprint:
+  name: SB – Guest Overnight
+  description: |
+    Prepares the home for overnight guests by adjusting presence and door automations and enabling guest sleep automation.
+  domain: script
+  input:
+    automations_to_disable:
+      name: Automations to disable
+      selector:
+        target:
+          entity:
+            domain: automation
+    guest_sleep_automation:
+      name: Guest sleep automation to enable
+      selector:
+        entity:
+          domain: automation
+sequence:
+  - action: automation.turn_off
+    target: !input automations_to_disable
+    data:
+      stop_actions: true
+  - action: automation.turn_on
+    target:
+      entity_id: !input guest_sleep_automation
+    data: {}
+mode: single
+icon: mdi:account-group

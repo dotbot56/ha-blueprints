@@ -1,0 +1,43 @@
+blueprint:
+  name: SB – Controller Charging
+  description: |
+    Starts charging a controller for a defined duration and then turns the charger off.
+  domain: script
+  input:
+    charger_switch:
+      name: Charger switch
+      selector:
+        target:
+          entity:
+            domain: switch
+    charge_hours:
+      name: Charge hours
+      default: 1
+      selector:
+        number:
+          min: 0
+          max: 12
+          unit_of_measurement: hours
+          mode: slider
+    charge_minutes:
+      name: Charge minutes
+      default: 45
+      selector:
+        number:
+          min: 0
+          max: 59
+          unit_of_measurement: minutes
+          mode: slider
+sequence:
+  - service: switch.turn_on
+    target: !input charger_switch
+    data: {}
+  - delay:
+      hours: !input charge_hours
+      minutes: !input charge_minutes
+      seconds: 0
+  - service: switch.turn_off
+    target: !input charger_switch
+    data: {}
+mode: single
+icon: mdi:controller

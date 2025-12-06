@@ -1,0 +1,159 @@
+blueprint:
+  name: SB – Cleaning Routine
+  description: |
+    Runs predefined cleaning routines for a robot vacuum with configurable mop intensity, fan speed, and segment selections.
+  domain: script
+  input:
+    routine:
+      name: Cleaning routine
+      default: kitchen
+      selector:
+        select:
+          options:
+            - kitchen
+            - guest
+            - entrance
+            - bathroom
+    mop_intensity_select:
+      name: Mop intensity select entity
+      selector:
+        entity:
+          domain: select
+    mop_mode_select:
+      name: Mop mode select entity
+      selector:
+        entity:
+          domain: select
+    vacuum_entity:
+      name: Vacuum entity
+      selector:
+        entity:
+          domain: vacuum
+    kitchen_segment:
+      name: Kitchen segment id
+      default: 18
+      selector:
+        number:
+          min: 0
+          max: 100
+          mode: box
+    guest_segments:
+      name: Guest segments (list)
+      default:
+        - 16
+        - 18
+        - 19
+        - 20
+        - 25
+      selector:
+        object: {}
+    entrance_segments:
+      name: Entrance segments (list)
+      default:
+        - 18
+        - 19
+        - 20
+      selector:
+        object: {}
+    bathroom_segment:
+      name: Bathroom segment id
+      default: 24
+      selector:
+        number:
+          min: 0
+          max: 100
+          mode: box
+sequence:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "{{ routine == 'kitchen' }}"
+      sequence:
+      - action: select.select_option
+        data:
+          option: moderate
+        target:
+          entity_id: !input mop_intensity_select
+      - action: select.select_option
+        data:
+          option: deep
+        target:
+          entity_id: !input mop_mode_select
+      - action: vacuum.set_fan_speed
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          fan_speed: balanced
+      - action: vacuum.send_command
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          command: app_segment_clean
+          params: !input kitchen_segment
+    - conditions:
+      - condition: template
+        value_template: "{{ routine == 'guest' }}"
+      sequence:
+      - action: select.select_option
+        data:
+          option: 'off'
+        target:
+          entity_id: !input mop_intensity_select
+      - action: vacuum.set_fan_speed
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          fan_speed: turbo
+      - action: vacuum.send_command
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          command: app_segment_clean
+          params: !input guest_segments
+    - conditions:
+      - condition: template
+        value_template: "{{ routine == 'entrance' }}"
+      sequence:
+      - action: select.select_option
+        data:
+          option: 'off'
+        target:
+          entity_id: !input mop_intensity_select
+      - action: vacuum.set_fan_speed
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          fan_speed: turbo
+      - action: vacuum.send_command
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          command: app_segment_clean
+          params: !input entrance_segments
+    - conditions:
+      - condition: template
+        value_template: "{{ routine == 'bathroom' }}"
+      sequence:
+      - action: select.select_option
+        data:
+          option: intense
+        target:
+          entity_id: !input mop_intensity_select
+      - action: select.select_option
+        data:
+          option: deep_plus
+        target:
+          entity_id: !input mop_mode_select
+      - action: vacuum.set_fan_speed
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          fan_speed: 'off'
+      - action: vacuum.send_command
+        target:
+          entity_id: !input vacuum_entity
+        data:
+          command: app_segment_clean
+          params: !input bathroom_segment
+mode: single
+icon: mdi:robot-vacuum
