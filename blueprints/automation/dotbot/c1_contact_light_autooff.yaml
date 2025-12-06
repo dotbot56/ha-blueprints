@@ -1,0 +1,69 @@
+blueprint:
+  name: C1 – Kontakt → Licht mit Auto-Off
+  description: >
+    Schaltet ein Licht ein, wenn ein Kontakt (z. B. Tür/Schrank) geöffnet wird, und
+    schaltet es nach einer einstellbaren Zeit oder beim Schliessen wieder aus.
+  domain: automation
+  input:
+    contact_sensor:
+      name: Kontakt-Sensor
+      description: Tür-/Fenster-/Schranksensor (on = geöffnet, off = geschlossen).
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class:
+            - door
+            - window
+            - opening
+
+    target_light:
+      name: Licht / Lichter / Area
+      description: Das zu schaltende Licht oder eine Area.
+      selector:
+        target:
+          entity:
+            domain: light
+
+    off_delay:
+      name: Ausschaltverzögerung
+      description: Zeit, nach der das Licht ausgeschaltet wird, wenn der Kontakt offen bleibt (in Sekunden).
+      default: 180
+      selector:
+        number:
+          min: 10
+          max: 3600
+          unit_of_measurement: seconds
+          mode: slider
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input contact_sensor
+
+action:
+  - choose:
+      # Kontakt geöffnet
+      - conditions:
+          - condition: state
+            entity_id: !input contact_sensor
+            state: "on"
+        sequence:
+          - service: light.turn_on
+            target: !input target_light
+
+          - delay:
+              seconds: !input off_delay
+
+          - service: light.turn_off
+            target: !input target_light
+
+      # Kontakt geschlossen
+      - conditions:
+          - condition: state
+            entity_id: !input contact_sensor
+            state: "off"
+        sequence:
+          - service: light.turn_off
+            target: !input target_light

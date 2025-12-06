@@ -1,0 +1,17 @@
+blueprint:
+  name: <Name des Blueprints>
+  description: >
+    Kurze Beschreibung.
+  domain: automation
+  input:
+    example_input:
+      name: Beispiel
+      selector:
+        entity:
+
+mode: restart
+max_exceeded: silent
+
+trigger: []
+condition: []
+action: []

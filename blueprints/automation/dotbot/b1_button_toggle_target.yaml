@@ -1,0 +1,46 @@
+blueprint:
+  name: B1 – Button → Toggle Ziel (Licht/Switch/Area)
+  description: >
+    Verknüpft einen MQTT-/Zigbee-Button oder -Schalter mit einem Toggle-Service
+    (z. B. light.toggle) auf ein frei wählbares Ziel (Licht, Switch oder Area).
+  domain: automation
+  input:
+    button_device:
+      name: Button-/Schalter-Device
+      description: MQTT-/Zigbee-Gerät, das die Action-Events liefert.
+      selector:
+        device: {}
+
+    action_subtype:
+      name: Action Subtype
+      description: Subtype der Aktion, z. B. single, double, hold, 1_single, 2_single etc.
+      default: single
+      selector:
+        text: {}
+
+    toggle_service:
+      name: Toggle-Service
+      description: Vollständiger Service-Name, z. B. light.toggle, switch.toggle.
+      default: light.toggle
+      selector:
+        text: {}
+
+    target_entity:
+      name: Ziel (Entity/Area/Device)
+      description: Entity, Device oder Area, auf die der Service angewendet wird.
+      selector:
+        target: {}
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: device
+    domain: mqtt
+    device_id: !input button_device
+    type: action
+    subtype: !input action_subtype
+
+action:
+  - service: !input toggle_service
+    target: !input target_entity

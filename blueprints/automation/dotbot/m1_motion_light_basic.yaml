@@ -1,0 +1,67 @@
+blueprint:
+  name: M1 – Bewegungsmelder Licht (ein/aus mit Verzögerung)
+  description: >
+    Schaltet ein Licht oder eine Area ein, wenn Bewegung/Präsenz erkannt wird
+    und schaltet es nach einstellbarer Zeit ohne Bewegung wieder aus.
+  domain: automation
+  input:
+    motion_sensor:
+      name: Bewegungs- / Präsenzsensor
+      description: Binary Sensor, der die Bewegung bzw. Belegung meldet (on = aktiv, off = inaktiv).
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class:
+            - motion
+            - occupancy
+            - presence
+
+    target_light:
+      name: Licht / Lichter / Area
+      description: Das zu schaltende Licht, mehrere Lichter oder eine Area.
+      selector:
+        target:
+          entity:
+            domain: light
+
+    off_delay:
+      name: Ausschaltverzögerung
+      description: Zeit ohne Bewegung, bis das Licht ausgeschaltet wird (in Sekunden).
+      default: 120
+      selector:
+        number:
+          min: 10
+          max: 3600
+          unit_of_measurement: seconds
+          mode: slider
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input motion_sensor
+
+action:
+  - choose:
+      # Fall 1: Sensor ist AUS (keine Bewegung / nicht belegt)
+      - conditions:
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "off"
+        sequence:
+          - delay:
+              seconds: !input off_delay
+
+          # Nur wenn immer noch "off", Licht ausschalten
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "off"
+
+          - service: light.turn_off
+            target: !input target_light
+
+    # Fall 2: Sensor ist EIN (Bewegung / Präsenz)
+    default:
+      - service: light.turn_on
+        target: !input target_light

@@ -1,0 +1,93 @@
+blueprint:
+  name: M2 – Bewegungsmelder Licht mit Sleep-Mode
+  description: >
+    Schaltet je nach Sleep-Mode entweder ein normales Licht oder ein Sleep-Licht
+    bei Bewegung/Präsenz ein und nach einer einstellbaren Zeit ohne Bewegung wieder aus.
+  domain: automation
+  input:
+    motion_sensor:
+      name: Bewegungs- / Präsenzsensor
+      description: Binary Sensor, der die Bewegung bzw. Belegung meldet (on = aktiv, off = inaktiv).
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class:
+            - motion
+            - occupancy
+            - presence
+
+    normal_light_target:
+      name: Normales Licht
+      description: Licht/Lichter für den Normalbetrieb.
+      selector:
+        target:
+          entity:
+            domain: light
+
+    sleep_light_target:
+      name: Sleep-Licht
+      description: Licht/Lichter für den Sleep-Mode (z. B. gedimmt).
+      selector:
+        target:
+          entity:
+            domain: light
+
+    sleep_mode_switch:
+      name: Sleep-Mode-Schalter
+      description: Schalter, der den Sleep-Mode signalisiert (on = Sleep-Mode aktiv).
+      selector:
+        entity:
+          domain: switch
+
+    off_delay:
+      name: Ausschaltverzögerung
+      description: Zeit ohne Bewegung, bis die Lichter ausgeschaltet werden (in Sekunden).
+      default: 120
+      selector:
+        number:
+          min: 10
+          max: 3600
+          unit_of_measurement: seconds
+          mode: slider
+
+mode: restart
+max_exceeded: silent
+
+trigger:
+  - platform: state
+    entity_id: !input motion_sensor
+
+action:
+  - choose:
+      # Fall 1: Sensor ist AUS → nach Delay alles aus
+      - conditions:
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "off"
+        sequence:
+          - delay:
+              seconds: !input off_delay
+
+          - condition: state
+            entity_id: !input motion_sensor
+            state: "off"
+
+          - service: light.turn_off
+            target: !input normal_light_target
+
+          - service: light.turn_off
+            target: !input sleep_light_target
+
+    # Fall 2: Sensor ist EIN → je nach Sleep-Mode das passende Licht an
+    default:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: !input sleep_mode_switch
+                state: "on"
+            sequence:
+              - service: light.turn_on
+                target: !input sleep_light_target
+        default:
+          - service: light.turn_on
+            target: !input normal_light_target

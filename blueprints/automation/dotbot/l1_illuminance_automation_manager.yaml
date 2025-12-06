@@ -1,0 +1,27 @@
+blueprint:
+  name: L1 – Illuminance Automation Manager (Skeleton)
+  description: >
+    Platzhalter-Blueprint: Verwaltet Automationen basierend auf einem Helligkeitssensor
+    (z. B. Tag/Dämmerung/Nacht). Logik muss noch ergänzt werden.
+  domain: automation
+  input:
+    illuminance_sensor:
+      name: Helligkeitssensor
+      description: Sensor mit Illuminance-Wert (Lux).
+      selector:
+        entity:
+          domain: sensor
+
+mode: single
+
+trigger:
+  - platform: state
+    entity_id: !input illuminance_sensor
+
+condition: []
+
+action:
+  - service: logbook.log
+    data:
+      name: Illuminance Automation Manager
+      message: "Blueprint-Skeleton ausgelöst – Logik muss noch ergänzt werden."
