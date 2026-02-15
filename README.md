@@ -20,6 +20,7 @@ ha-blueprints-dotbot/
 │   │       ├── c1_contact_light_autooff.yaml
 │   │       ├── b1_button_toggle_target.yaml
 │   │       ├── b2_button_call_script.yaml
+│   │       ├── b3_ts0042_scene_switch.yaml
 │   │       ├── l1_illuminance_automation_manager.yaml
 │   ├── script/
 │   │   └── dotbot/
@@ -103,6 +104,13 @@ Buttons starten Scripts oder Szenen wie:
 * Sleep-Time
 * Cinema Mode
 * Sexy Time
+
+---
+
+## 🟥 B3 – TS0042 Scene Switch (Z2M)
+
+**Datei:** `b3_ts0042_scene_switch.yaml`
+Mapping für 2 Buttons × (Single/Double/Hold), frei belegbar mit Aktionen.
 
 ---
 
