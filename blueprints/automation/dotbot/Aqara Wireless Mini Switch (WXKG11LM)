@@ -1,0 +1,60 @@
+blueprint:
+  name: Aqara Wireless Mini Switch (WXKG11LM)
+  description: Aqara Wireless Mini Switch (WXKG11LM)
+  domain: automation
+  input:
+    switch:
+      name: Switch
+      description: Aqara Wireless Mini Switch (WXKG11LM)
+      selector:
+        entity:
+          domain:
+          - event
+          integration: mqtt
+          multiple: false
+    press_single:
+      name: Single button press
+      description: Action to run on single button press
+      default: []
+      selector:
+        action: {}
+    press_double:
+      name: Double button press
+      description: Action to run on double button press
+      default: []
+      selector:
+        action: {}
+    hold:
+      name: Hold button
+      description: Action to perform when the button is held
+      default: []
+      selector:
+        action: {}
+    release:
+      name: Release button
+      description: Action to perform when the button is released
+      default: []
+      selector:
+        action: {}
+  source_url: https://community.home-assistant.io/t/zigbee2mqtt-aqara-wireless-mini-switch-wxkg11lm/810035/3
+mode: queued
+max_exceeded: silent
+trigger:
+- platform: state
+  entity_id: !input switch
+action:
+- variables:
+    command: '{{ trigger.to_state.attributes.event_type }}'
+- choose:
+  - conditions:
+    - '{{ command == ''single'' }}'
+    sequence: !input press_single
+  - conditions:
+    - '{{ command == ''double'' }}'
+    sequence: !input press_double
+  - conditions:
+    - '{{ command == ''hold'' }}'
+    sequence: !input hold
+  - conditions:
+    - '{{ command == ''release'' }}'
+    sequence: !input release
